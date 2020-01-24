@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+            <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+            <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+            <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+            <link href = "/css/style.css" rel="stylesheet" type = "text/css"> 
+    </head>
+    <body>
+
+<h2><%= postDetail.title %></h2>
+<p><%= postDetail.description %></p>
+<div class =  container>
+    <div class="row pt-3">
+    <div class="chat-main">
+        <div class="comments">
+        <% 
+        if (typeof comments != 'undefined' && comments != null) {
+        comments.forEach( function ( commentData ){
+                %>
+        
+        <div class="col-md-12 chats border">
+            <ul class="p-0">
+                <li class="pl-2 pr-2 bg-primary rounded text-white text-center send-msg mb-1">
+           
+
+                    <p> <%= commentData.comment %> </p>
+                        
+                </li>
+            </ul>               
+        </div>
+        <% });
+                    } %>
+        </div>
+    </div>
+    </div>
+</div>
+
+<textarea id="comment" rows="3" cols="50"></textarea></br>
+<input type="hidden" id="postId" value="<%= postId %>">
+<input type="submit" value="Send" id="send"> 
+</body>
+<script type="text/javascript">
+var socket = io();
+    $('#send').click(function(){
+        var comment = $('#comment').val();
+        var postId = $('#postId').val();
+        if(comment != ''){
+            var data = {'comment': comment,'postId': postId};
+        $('.comments').append("<p>"+comment+"</p>");
+        $('#comment').val('');
+        }
+        
+    socket.emit('comment',data);
+
+
+    });
+
+    socket.on('comment',function(data){
+        var postId = "<%= postId %>";
+        if(postId==data.postId){
+            $('.comments').append("<p>"+data.comment+"</p>");
+        }
+        });
+    
+
+</script>
+</html>
